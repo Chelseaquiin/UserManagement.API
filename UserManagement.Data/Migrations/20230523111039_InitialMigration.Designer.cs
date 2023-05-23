@@ -12,7 +12,7 @@ using UserManagement.Data.Context;
 namespace UserManagement.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230523105117_InitialMigration")]
+    [Migration("20230523111039_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -116,6 +116,9 @@ namespace UserManagement.Data.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ApplicationRoleId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
 
@@ -129,17 +132,14 @@ namespace UserManagement.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("RoleId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex("ApplicationRoleId");
 
-                    b.HasIndex("RoleId1");
+                    b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims", (string)null);
                 });
@@ -249,9 +249,6 @@ namespace UserManagement.Data.Migrations
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
 
-                    b.Property<string>("ApplicationUserId1")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
 
@@ -269,8 +266,6 @@ namespace UserManagement.Data.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId1");
 
                     b.HasIndex("UserId");
 
@@ -313,31 +308,23 @@ namespace UserManagement.Data.Migrations
             modelBuilder.Entity("UserManagement.Models.Entities.ApplicationRoleClaim", b =>
                 {
                     b.HasOne("UserManagement.Models.Entities.ApplicationRole", null)
+                        .WithMany("RoleClaims")
+                        .HasForeignKey("ApplicationRoleId");
+
+                    b.HasOne("UserManagement.Models.Entities.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("UserManagement.Models.Entities.ApplicationRole", "Role")
-                        .WithMany("RoleClaims")
-                        .HasForeignKey("RoleId1");
-
-                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("UserManagement.Models.Entities.ApplicationUserClaim", b =>
                 {
-                    b.HasOne("UserManagement.Models.Entities.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId1");
-
                     b.HasOne("UserManagement.Models.Entities.ApplicationUser", null)
                         .WithMany("Claims")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("UserManagement.Models.Entities.ApplicationUserRole", b =>
